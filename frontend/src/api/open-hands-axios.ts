@@ -51,6 +51,7 @@ export const isKeycloakErrorResponse = <T extends object | Array<unknown>>(
 
 // Axios interceptor to handle token refresh
 export const setupOpenhandsAxiosInterceptors = (
+  appMode: string,
   refreshToken: () => Promise<boolean>,
   logout: () => void,
 ) => {
@@ -86,6 +87,22 @@ export const setupOpenhandsAxiosInterceptors = (
         !originalRequest._retry // Prevent infinite retry loops
       ) {
         originalRequest._retry = true;
+        // if (appMode === "saas") {
+        //   try {
+        //     const refreshed = await refreshToken();
+        //     if (refreshed) {
+        //       originalRequest.headers["X-GitHub-Token"] = openHands.defaults.headers.common["X-GitHub-Token"]
+        //       return await openHands(originalRequest);
+        //     }
+
+        //     logout();
+        //     return await Promise.reject(new Error("Failed to refresh token"));
+        //   } catch (refreshError) {
+        //     // If token refresh fails, evict the user
+        //     logout();
+        //     return Promise.reject(refreshError);
+        //   }
+        // }
         try {
           const refreshed = await refreshToken();
           if (refreshed) {
